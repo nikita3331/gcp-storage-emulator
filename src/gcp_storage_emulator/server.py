@@ -10,10 +10,9 @@ from functools import partial
 from http import HTTPStatus, server
 from urllib.parse import parse_qs, unquote, urlparse
 
-from gcp_storage_emulator import settings
-from gcp_storage_emulator.handlers import buckets, objects
-from gcp_storage_emulator.storage import Storage
-
+import settings
+from handlers import buckets, objects
+from storage import Storage
 logger = logging.getLogger(__name__)
 
 GET = "GET"
@@ -67,15 +66,17 @@ HANDLERS = (
         ),
         {GET: objects.get, DELETE: objects.delete, PATCH: objects.patch},
     ),
+	(
+        r"/b/(?P<bucket_name>[-.\w]+)/o/(?P<object_id>.*[^/]+)$",
+        {GET: objects.get},
+    ),
     # Non-default API endpoints
     (
         r"^{}/b/(?P<bucket_name>[-.\w]+)/o$".format(settings.UPLOAD_API_ENDPOINT),
         {POST: objects.insert, PUT: objects.upload_partial},
     ),
     (
-        r"^{}/b/(?P<bucket_name>[-.\w]+)/o/(?P<object_id>.*[^/]+)$".format(
-            settings.DOWNLOAD_API_ENDPOINT
-        ),
+        r"^/b/(?P<bucket_name>[-.\w]+)/(?P<object_id>.*[^/]+)$",
         {GET: objects.download},
     ),
     (
@@ -86,10 +87,10 @@ HANDLERS = (
     (r"^/$", {GET: _health_check}),  # Health check endpoint
     (r"^/wipe$", {GET: _wipe_data}),  # Wipe all data
     # Public file serving, same as object.download and signed URLs
-    (
-        r"^/(?P<bucket_name>[-.\w]+)/(?P<object_id>.*[^/]+)$",
-        {GET: objects.download, PUT: objects.xml_upload},
-    ),
+    # (
+    #     r"^/(?P<bucket_name>[-.\w]+)/(?P<object_id>.*[^/]+)$",
+    #     {GET: objects.download, PUT: objects.xml_upload},
+    # ),
 )
 
 BATCH_HANDLERS = (
@@ -317,7 +318,6 @@ class Router(object):
 
         request = Request(self._request_handler, method)
         response = Response(self._request_handler)
-
         for regex, handlers in HANDLERS:
             pattern = re.compile(regex)
             match = pattern.fullmatch(request.path)

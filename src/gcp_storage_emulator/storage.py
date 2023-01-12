@@ -7,8 +7,8 @@ from hashlib import sha256
 import fs
 from fs.errors import FileExpected, ResourceNotFound
 
-from gcp_storage_emulator.exceptions import Conflict, NotFound
-from gcp_storage_emulator.settings import STORAGE_BASE, STORAGE_DIR
+from exceptions import Conflict, NotFound
+from settings import STORAGE_BASE, STORAGE_DIR
 
 # Real buckets can't start with an underscore
 RESUMABLE_DIR = "_resumable"
@@ -306,7 +306,6 @@ class Storage(object):
         Returns:
             bytes -- Raw content of the file
         """
-
         try:
             bucket_dir = self._fs.opendir(bucket_name)
             return bucket_dir.open(file_name, mode="rb").read()

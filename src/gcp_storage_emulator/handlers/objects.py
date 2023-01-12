@@ -15,7 +15,7 @@ from http import HTTPStatus
 
 import google_crc32c
 
-from gcp_storage_emulator.exceptions import Conflict, NotFound
+from exceptions import Conflict, NotFound
 
 logger = logging.getLogger("api.object")
 

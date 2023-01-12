@@ -5,9 +5,9 @@ import logging
 import os
 import sys
 
-from gcp_storage_emulator.handlers.buckets import create_bucket
-from gcp_storage_emulator.server import create_server
-from gcp_storage_emulator.storage import Storage
+from handlers.buckets import create_bucket
+from server import create_server
+from storage import Storage
 
 # One after gcloud-task-emulator one
 DEFAULT_PORT = int(os.environ.get("PORT", 9023))
@@ -101,7 +101,6 @@ def main(args=sys.argv[1:], test_mode=False):
         storage = Storage(data_dir=args.data_dir)
         create_bucket(args.name, storage)
         sys.exit(0)
-
     root = logging.getLogger("")
     stream_handler = logging.StreamHandler()
     root.addHandler(stream_handler)

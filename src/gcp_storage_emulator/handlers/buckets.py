@@ -1,9 +1,8 @@
 import logging
 from datetime import datetime, timezone
 from http import HTTPStatus
-
-from gcp_storage_emulator import settings
-from gcp_storage_emulator.exceptions import Conflict, NotFound
+import settings
+from exceptions import Conflict, NotFound
 
 logger = logging.getLogger("api.bucket")
 
